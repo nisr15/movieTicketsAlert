@@ -83,12 +83,27 @@ def check_once() -> bool:
             )
         )
         try:
-            page.goto(MOVIE_URL, timeout=30000, wait_until="networkidle")
+            page.goto(MOVIE_URL, timeout=45000, wait_until="domcontentloaded")
             # Give any lazy-loaded content a moment to render
-            page.wait_for_timeout(3000)
+            page.wait_for_timeout(6000)
             content = page.content()
+            page.screenshot(path="debug_screenshot.png", full_page=True)
+            with open("debug_page.html", "w", encoding="utf-8") as f:
+                f.write(content)
         except Exception as e:
             log.warning(f"Page load failed ({e}); will retry next cycle.")
+            # Best-effort debug capture even on failure, so we can see what went wrong
+            try:
+                page.screenshot(path="debug_screenshot.png", full_page=True)
+            except Exception:
+                pass
+            try:
+                with open("debug_page.html", "w", encoding="utf-8") as f:
+                    f.write(page.content())
+            except Exception:
+                pass
+            with open("debug_error.txt", "w", encoding="utf-8") as f:
+                f.write(f"MOVIE_URL: {MOVIE_URL}\nError: {repr(e)}\n")
             browser.close()
             return False
         browser.close()
