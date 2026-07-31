@@ -38,7 +38,7 @@ from datetime import datetime
 #   1. Open BookMyShow (or district.in) in your browser
 #   2. Search "Spider-Man: Brand New Day", select Hyderabad
 #   3. Copy the URL of the movie's showtimes page
-MOVIE_URL = "https://in.bookmyshow.com/movies/hyderabad/spider-man-brand-new-day/buytickets/ET00505581/20260807?etCodes=*&language=english&refEventCode=ET00505581"
+MOVIE_URL = "https://in.bookmyshow.com/movies/hyderabad/spider-man-brand-new-day/buytickets/ET00505581/20260806?etCodes=*&language=english&refEventCode=ET00505581"
 
 # Exact-ish theatre name to look for on the page
 THEATRE_NAME = "Prasads"

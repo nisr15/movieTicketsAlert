@@ -1,0 +1,38 @@
+name: Check BookMyShow tickets
+
+on:
+  schedule:
+    # Every 30 minutes. GitHub may delay this by a few minutes during busy periods — that's normal on the free tier.
+    - cron: "*/30 * * * *"
+  workflow_dispatch: {}  # lets you also trigger it manually from the Actions tab
+
+permissions:
+  contents: write  # needed so the workflow can commit FOUND.flag once tickets are found
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install playwright requests plyer
+          playwright install --with-deps chromium
+
+      - name: Run ticket check
+        run: python watch_tickets.py
+
+      - name: Commit FOUND.flag if tickets were found
+        run: |
+          if [ -f FOUND.flag ]; then
+            git config user.name "ticket-watcher-bot"
+            git config user.email "actions@users.noreply.github.com"
+            git add FOUND.flag ticket_watcher.log
+            git commit -m "Tickets found - stopping future checks" || echo "Nothing to commit"
+            git push
+          fi
